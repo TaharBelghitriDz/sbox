@@ -1,5 +1,5 @@
 {
-  "name": "sbox",
+  "name": "sbox-react",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
@@ -8,14 +8,27 @@
     "url": "git+github.com:TaharBelghitriDz/SBox.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm build --watch --hot",
+    "build": "webpack --color --progress"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "tahar belghitri",
+    "email": "gitnawi@gmail.com"
+  },
   "license": "ISC",
   "dependencies": {
     "@types/use-sync-external-store": "^0.0.3",
+    "deepmerge-ts": "^4.2.2",
+    "ts-loader": "^9.4.1",
     "typescript": "^4.8.4",
     "use-sync-external-store": "^1.2.0"
+  },
+  "devDependencies": {
+    "esbuild-loader": "^2.20.0",
+    "fork-ts-checker-webpack-plugin": "^7.2.13",
+    "nodemon-webpack-plugin": "^4.8.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   }
 }
