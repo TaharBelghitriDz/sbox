@@ -3,10 +3,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import ts from "typescript";
-import sucrase from "@rollup/plugin-sucrase";
 
-// this override is needed because Module format cjs does not support top-level await
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require("./package.json");
 
 const globals = {
@@ -18,13 +15,15 @@ export default {
   output: [
     {
       file: "build/index.js",
-      format: "cjs", // commonJS
+      format: "cjs",
       sourcemap: true,
+      preserveModules: true,
     },
     {
       file: "build/index.es.js",
-      format: "esm", // ES Modules
+      format: "esm",
       sourcemap: true,
+      preserveModules: true,
     },
   ],
   plugins: [
@@ -34,10 +33,6 @@ export default {
     typescript({
       typescript: ts,
     }),
-    // sucrase({
-    //   exclude: ["node_modules/**"],
-    //   transforms: ["typescript", "js"],
-    // }),
     commonjs({
       exclude: "node_modules",
       ignoreGlobal: true,
