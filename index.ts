@@ -1,11 +1,12 @@
 import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { deepmerge } from "deepmerge-ts";
 
-export const createState = <T, R>(
+function createState<T, R>(
   state: T,
   methods: {
-    [key in keyof R]: (args: R[key]) => Promise<Partial<T>> | Partial<T>;
+    [key in keyof R]: (...args: any) => Partial<T> | Promise<Partial<T>>;
   }
-) => {
+) {
   const listeners = new Set<() => void>();
 
   const subscribe = (clbk: () => void) => {
@@ -13,33 +14,47 @@ export const createState = <T, R>(
     return () => listeners.delete(clbk);
   };
 
-  let newState: T = state;
-  let newMethods: any = {};
+  let newState = state || {};
+
+  let newMethods = methods;
 
   Object.keys(methods).forEach((e) => {
     const fun = methods[e as keyof R];
 
-    newMethods[e] = (p: Parameters<typeof fun>) => {
+    (newMethods[e as keyof R] as any) = (p: Parameters<typeof fun>) => {
       if (
-        typeof fun(p as any as R[keyof R]) === "object" &&
-        typeof (fun(p as any as R[keyof R]) as any).then === "function"
+        typeof fun(p) === "object" &&
+        typeof (fun(p) as any).then === "function"
       )
-        (fun(p as any as R[keyof R]) as any).then((s: Partial<T>) => {
-          newState = { ...newState, ...s };
+        (fun(p) as Promise<Partial<T>>).then((s) => {
+          newState = deepmerge(newState, s);
           listeners.forEach((l) => l());
         });
       else {
-        newState = { ...newState, ...fun(p as any as R[keyof R]) };
+        newState = deepmerge(newState, fun(p));
         listeners.forEach((l) => l());
       }
     };
   });
 
-  return {
-    useStore: (field: keyof T) =>
-      useSyncExternalStore(subscribe, () => newState[field]) as any,
-    ...(newMethods as typeof methods),
+  const sUpdate = (e: Partial<typeof methods>) => {
+    newState = deepmerge(newState, e);
+    listeners.forEach((l) => l());
   };
-};
+
+  return {
+    useStore: (field: (string | string | number)[]) =>
+      useSyncExternalStore(subscribe, () => {
+        if (typeof field !== "string")
+          return field.reduce(
+            (xs: any, x) => (xs && xs[x] ? xs[x] : null),
+            newState
+          );
+        else return newState[field];
+      }),
+    sUpdate,
+    ...newMethods,
+  };
+}
 
 export default createState;
