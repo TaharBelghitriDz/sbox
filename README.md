@@ -10,7 +10,7 @@ npm install sbox-react
 
 ### first create store
 
-all what you need is on the createSyore function
+all what you need is on the createState function
 
 ```javascript
 const state = { s: "hi", r: { j: "j", m: "m" } };
