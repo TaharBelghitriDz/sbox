@@ -17,12 +17,15 @@ const state = { s: "hi", r: { j: "j", m: "m" } };
 
 const store = createState(state, (currentState) => ({
   // all what you need is return a partial from the state to update it
-  // it's gonna mege the state and this object so you don't have to worry about anything
+
 
   open: () => ({ s: "s - " + Date.now() }),
   close: async (e) => {
     const fetch = await ...
     //some workd here
+    //
+
+    // it's gonna merge the state and the object you return so you don't have to worry about anything
 
     return { s: { j : fetch} };
   },
