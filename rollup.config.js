@@ -13,18 +13,7 @@ const globals = {
 export default {
   input: "index.ts",
   output: [
-    {
-      file: "build/index.js",
-      format: "cjs",
-      sourcemap: true,
-      preserveModules: true,
-    },
-    {
-      file: "build/index.es.js",
-      format: "esm",
-      sourcemap: true,
-      preserveModules: true,
-    },
+    { dir: "build/", format: "cjs", sourcemap: true, preserveModules: true },
   ],
   plugins: [
     peerDepsExternal(),
@@ -32,6 +21,7 @@ export default {
     commonjs(),
     typescript({
       typescript: ts,
+      tsconfig: "./tsconfig.json",
     }),
     commonjs({
       exclude: "node_modules",

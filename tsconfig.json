@@ -3,7 +3,7 @@
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "declarationDir": "build/types",
+    "declarationDir": "./build/types",
     "esModuleInterop": true,
     "outDir": "./build",
     "jsx": "react",

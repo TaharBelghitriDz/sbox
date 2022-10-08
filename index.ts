@@ -3,7 +3,7 @@ import { deepmerge } from "deepmerge-ts";
 
 function createState<T, R>(
   state: T,
-  methods: {
+  methods: (currentState: T) => {
     [key in keyof R]: (...args: any) => Partial<T> | Promise<Partial<T>>;
   }
 ) {
@@ -14,44 +14,40 @@ function createState<T, R>(
     return () => listeners.delete(clbk);
   };
 
-  let newState = state || {};
+  let newState = state;
 
-  let newMethods = methods;
+  let newMethods = methods(newState);
 
-  Object.keys(methods).forEach((e) => {
-    const fun = methods[e as keyof R];
+  Object.keys(methods(newState)).forEach((e) => {
+    const fun = methods(newState)[e as keyof R];
 
-    (newMethods[e as keyof R] as any) = (p: Parameters<typeof fun>) => {
+    newMethods[e as keyof R] = (p: Parameters<typeof fun>) => {
       if (
         typeof fun(p) === "object" &&
         typeof (fun(p) as any).then === "function"
       )
-        (fun(p) as Promise<Partial<T>>).then((s) => {
-          newState = deepmerge(newState, s);
+        return (fun(p) as Promise<Partial<T>>).then((s: Partial<T>) => {
+          newState = deepmerge(newState, s) as any as T;
           listeners.forEach((l) => l());
+          return newState;
         });
-      else {
-        newState = deepmerge(newState, fun(p));
-        listeners.forEach((l) => l());
-      }
+      else
+        return (
+          (newState = deepmerge(newState, fun(p)) as any as T),
+          listeners.forEach((l) => l()),
+          newState
+        );
     };
   });
 
   const sUpdate = (e: Partial<typeof methods>) => {
-    newState = deepmerge(newState, e);
+    newState = deepmerge(newState, e) as any as T;
     listeners.forEach((l) => l());
   };
 
   return {
-    useStore: (field: (string | string | number)[]) =>
-      useSyncExternalStore(subscribe, () => {
-        if (typeof field !== "string")
-          return field.reduce(
-            (xs: any, x) => (xs && xs[x] ? xs[x] : null),
-            newState
-          );
-        else return newState[field];
-      }),
+    useStore: (field: (s: typeof state) => any) =>
+      useSyncExternalStore(subscribe, () => field(newState)),
     sUpdate,
     ...newMethods,
   };
