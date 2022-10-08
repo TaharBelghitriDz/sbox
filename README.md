@@ -57,13 +57,18 @@ function Value = () => {
 
 ### sUpdate
 
-easy function to helping with updtae state, get an object as parameter and merge it with the state
+easy function to update state, get an object as parameter and merge it with the state
 
 ```javascript
 function Value = () => {
     // state is you current state with latest update
   const value = store.useStore((state) => state.s);
-  return <h1>{value} around here ...</h1>;
+
+  return <h1 onClick={()=>
+                        store.sUpdate({s :"changed by sUpdate function"})
+                    }>
+            click me to update it ... {value}
+        </h1>;
 }
 ```
 
