@@ -13,11 +13,12 @@ npm install sbox-react
 all what you need is on the createState function
 
 ```javascript
+import createState from "sbox-react";
+
 const state = { s: "hi", r: { j: "j", m: "m" } };
 
+// all what you need is return a partial from the state to update it
 const store = createState(state, (currentState) => ({
-  // all what you need is return a partial from the state to update it
-
 
   open: () => ({ s: "s - " + Date.now() }),
   close: async (e) => {
