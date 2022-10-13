@@ -1,6 +1,6 @@
 {
   "name": "sbox-react",
-  "version": "1.0.15",
+  "version": "2.0.0",
   "description": "the easiest and simple solution for react scalable state management",
   "main": "./build/index.js",
   "module": "./build/index.es.js",
