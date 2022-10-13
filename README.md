@@ -15,12 +15,12 @@ all what you need is on the createState function
 ```javascript
 import createState from "sbox-react";
 
-const state = { s: "hi", r: { j: "j", m: "m" } };
+const state = { msg: "hi", values: { one: "one", two: "two" } };
 
 // all what you need is return a partial from the state to update it
 const store = createState(state, (currentState) => ({
 
-  open: () => ({ s: "s - " + Date.now() }),
+  open: () => ({ msg: "time - " + Date.now() }),
   close: async (e) => {
     const fetch = await ...
     //some workd here
@@ -28,7 +28,7 @@ const store = createState(state, (currentState) => ({
 
     // it's gonna merge the state and the object you return so you don't have to worry about anything
 
-    return { s: { j : fetch} };
+    return { value: { one : fetch} };
   },
 }));
 ```
@@ -71,6 +71,35 @@ function Value = () => {
             click me to update it ... {value}
         </h1>;
 }
+```
+
+### async action
+
+just return a part of the state from the action and it's done
+
+```javascript
+const store = createState(state, (currentState) => ({
+
+  close: async (e) => {
+    const fetch = await ...
+    //some workd here
+    //
+
+    // it's gonna merge the state and the object you return so you don't have to worry about anything
+
+    return { value: { one : fetch} };
+  },
+}));
+```
+
+### Read from state in actions
+
+```javascript
+const store = createState(state, (currentState) => ({
+  set: (e) => {
+    return { value: { one: currentState.value.one * 2 } };
+  },
+}));
 ```
 
 ### Why sbox over all ?
